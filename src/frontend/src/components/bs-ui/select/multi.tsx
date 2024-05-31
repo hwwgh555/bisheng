@@ -120,7 +120,7 @@ const MultiSelect = ({
             <div className="mt-2">
                 {
                     optionFilter.map((item, index) => (
-                        <MultiItem active={values.includes(item.value)} value={item.value} onClick={handleSwitch}>{item.label}</MultiItem>
+                        <MultiItem key={item.value} active={values.includes(item.value)} value={item.value} onClick={handleSwitch}>{item.label}</MultiItem>
                     ))
                 }
             </div>

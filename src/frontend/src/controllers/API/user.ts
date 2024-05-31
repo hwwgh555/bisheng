@@ -1,4 +1,4 @@
-import { ROLE, User } from "../../types/api/user";
+import { Role, User, UserRole } from "../../types/api/user";
 import axios from "../request";
 
 // 获取 key
@@ -35,7 +35,7 @@ export async function disableUserApi(userid, status) {
     return await axios.post(`/api/v1/user/update`, { user_id: userid, delete: status });
 }
 // 角色列表
-export async function getRolesApi(searchkey = ''): Promise<{ data: ROLE[] }> {
+export async function getRolesApi(searchkey = ''): Promise<Role[]> {
     return await axios.get(`/api/v1/role/list?role_name=${searchkey}`)
 }
 /**
@@ -50,33 +50,53 @@ export async function getSysConfigApi(): Promise<string> {
 export async function setSysConfigApi(data) {
     return await axios.post(`/api/v1/config/save`, data);
 }
+
+type SearchParams = {
+  role_id: string,
+  page_size: number,
+  page_num: number,
+  name: string,
+  type?: string,
+}
+
 /**
  * 根据角色获取技能列表
  */
-export async function getRoleSkillsApi(params): Promise<{ data: any[], total: number }> {
+export async function getRoleSkillsApi(params: SearchParams): Promise<{ data: any[], total: number }> {
     return await axios.get(`/api/v1/role_access/flow`, { params });
 }
 /**
  * 根据角色获取技能列表
  */
-export async function getRoleAssistApi(params): Promise<{ data: any[], total: number }> {
+export async function getRoleAssistApi(params: SearchParams): Promise<{ data: any[], total: number }> {
     return await axios.get(`/api/v1/role_access/list_type`, { params });
 }
 /**
  * 根据角色获取知识库列表
  */
-export async function getRoleLibsApi(params): Promise<{ data: any[], total: number }> {
+export async function getRoleLibsApi(params: SearchParams): Promise<{ data: any[], total: number }> {
     return await axios.get(`/api/v1/role_access/knowledge`, { params });
 }
 /**
  * 新增角色
  */
-export async function createRole(name) {
+export async function createRole(name: string, remark: string) {
     return await axios.post(`/api/v1/role/add`, {
         "role_name": name,
-        "remark": "手动创建用户"
+        remark,
     });
 }
+
+/**
+ * 更新角色基本信息
+ */
+export async function updateRoleNameApi(roleId, name, remark) {
+    return axios.patch(`/api/v1/role/${roleId}`, {
+        "role_name": name,
+        remark,
+    })
+}
+
 /**
  * 更新角色权限
  */
@@ -86,6 +106,7 @@ enum ACCESS_TYPE {
     MANAGE_LIB,
     ASSISTANT = 5
 }
+
 export async function updateRolePermissionsApi(data: { role_id: number, access_id: number[], type: ACCESS_TYPE }) {
     return await axios.post(`/api/v1/role_access/refresh`, data);
 }
@@ -103,15 +124,6 @@ export async function getRolePermissionsApi(roleId): Promise<{ data: any[], tota
     // ])
 }
 
-/**
- * 更新角色基本信息
- */
-export async function updateRoleNameApi(roleId, name) {
-    return axios.patch(`/api/v1/role/${roleId}`, {
-        "role_name": name,
-        "remark": "手动创建用户"
-    })
-}
 
 /**
  * 删除角色
@@ -123,7 +135,7 @@ export async function delRoleApi(roleId) {
 /**
  * 获取用户的角色信息
  */
-export async function getUserRoles(userId): Promise<ROLE[]> {
+export async function getUserRoles(userId): Promise<UserRole[]> {
     return axios.get(`/api/v1/user/role?user_id=${userId}`)
 }
 

@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 // import { Button } from "../../../components/ui/button";
+import type { User } from "@/types/api/user";
 import { Button } from "@/components/bs-ui/button";
 import {
     Table,
@@ -23,7 +24,7 @@ export default function Users(params) {
     const { user } = useContext(userContext);
     const { t } = useTranslation()
 
-    const { page, pageSize, data: users, total, loading, setPage, search, reload } = useTable({ pageSize: 13 }, (param) =>
+    const { page, pageSize, data: users, total, loading, setPage, search, reload } = useTable<User>({ pageSize: 13 }, (param) =>
         getUsersApi(param.keyword, param.page, param.pageSize)
     )
 
@@ -68,15 +69,19 @@ export default function Users(params) {
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[200px]">{t('system.username')}</TableHead>
-                        <TableHead>{t('createTime')}</TableHead>
+                        <TableHead className="w-[185px]">邮箱</TableHead>
+                        <TableHead className="w-[233px]">角色</TableHead>
+                        {/* <TableHead>{t('createTime')}</TableHead> */}
+                        <TableHead className="170">注册时间</TableHead>
                         <TableHead className="text-right">{t('operations')}</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {users.map((el) => (
-                        <TableRow key={el.id}>
+                        <TableRow key={el.user_id}>
                             <TableCell className="font-medium max-w-md truncate">{el.user_name}</TableCell>
-                            {/* <TableCell>{el.role}</TableCell> */}
+                            <TableCell>{el.role}</TableCell>
+                            <TableCell>{el.email}</TableCell>
                             <TableCell>{el.update_time.replace('T', ' ')}</TableCell>
                             <TableCell className="text-right">
                                 {user.user_id === el.user_id ? <Button variant="link" className="text-gray-400 px-0 pl-6">{t('edit')}</Button> :
